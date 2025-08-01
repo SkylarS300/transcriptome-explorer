@@ -1,0 +1,27 @@
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    max-width: 400px;
+}
+
+input[type="file"] {
+    padding: 0.5rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 0.6rem 1rem;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #003f87;
+}
