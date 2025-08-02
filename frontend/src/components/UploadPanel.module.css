@@ -1,15 +1,17 @@
 .panel {
     padding: 2rem;
-    background-color: #ffffff;
+    background-color: var(--card);
+    color: var(--text);
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     max-width: 700px;
     margin: auto;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 h2 {
     font-size: 1.75rem;
-    color: #002855;
+    color: var(--text);
     margin-bottom: 1rem;
 }
 
@@ -30,11 +32,14 @@ select {
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 0.95rem;
+    background: var(--card);
+    color: var(--text);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 button {
     margin-top: 1rem;
-    background-color: #0077cc;
+    background-color: var(--accent);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -49,8 +54,47 @@ button:hover {
 }
 
 pre {
-    background: #f6f8fa;
+    background: var(--card);
+    color: var(--text);
     padding: 1rem;
     border-radius: 6px;
     overflow-x: auto;
+}
+
+.validationBox {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fff4f4;
+    border-left: 4px solid crimson;
+    border-radius: 8px;
+    color: #660000;
+}
+
+.validationBox ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.previewTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--card);
+}
+
+.previewTable td,
+.previewTable th {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+}
+
+.previewBox {
+    margin-top: 1rem;
+    background: var(--card);
+    color: var(--text);
+    padding: 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
 }

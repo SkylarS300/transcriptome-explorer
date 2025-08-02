@@ -6,24 +6,43 @@ import PCAPlot from "./components/PCAPlot";
 import EnrichmentTable from "./components/EnrichmentTable";
 import EnrichmentViewer from "./components/EnrichmentViewer";
 import VolcanoPlot from "./components/VolcanoPlot";
+import Layout from "./components/Layout";
+import FormatHelpModal from "./components/FormatHelpModal";
 
 const App = () => {
     const [pcaData, setPcaData] = useState(null);
     const [deData, setDeData] = useState(null);
     const [enrichmentData, setEnrichmentData] = useState(null);
-
+    const [showHelp, setShowHelp] = useState(false);
 
     return (
-        <div>
-            <h1 style={{ textAlign: "center" }}>Transcriptome Visualizer</h1>
-            <UploadPanel setPcaData={setPcaData} setDeData={setDeData} setEnrichmentData={setEnrichmentData} />
-            <PCAGraph data={pcaData} />
-            <PCAPlot data={pcaData} />
-            <VolcanoPlot data={deData} />
-            <DETable data={deData} />
-            <EnrichmentViewer data={enrichmentData} />
-            {enrichmentData && <EnrichmentTable data={enrichmentData} />}
-        </div>
+        <Layout>
+            {showHelp && <FormatHelpModal onClose={() => setShowHelp(false)} />}
+
+            <div id="upload">
+                <UploadPanel
+                    setPcaData={setPcaData}
+                    setDeData={setDeData}
+                    setEnrichmentData={setEnrichmentData}
+                    showHelpModal={() => setShowHelp(true)}
+                />
+            </div>
+
+            <div id="pca">
+                <PCAGraph data={pcaData} />
+                <PCAPlot data={pcaData} />
+            </div>
+
+            <div id="volcano">
+                <VolcanoPlot data={deData} />
+                <DETable data={deData} />
+            </div>
+
+            <div id="enrichment">
+                <EnrichmentViewer data={enrichmentData} />
+                {enrichmentData && <EnrichmentTable data={enrichmentData} />}
+            </div>
+        </Layout>
     );
 };
 
