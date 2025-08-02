@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from .de_analysis import compute_differential_expression
 from .enrichment import run_gprofiler_enrichment
@@ -105,23 +106,16 @@ async def run_de(
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/enrich")
-async def run_enrichment(
-    counts_file: UploadFile = File(...),
-    metadata_file: UploadFile = File(...)
-):
+async def run_enrichment(request: Request):
     try:
-        # Parse
-        counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
-        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+        data = await request.json()
+        query = data.get("query", [])
+        organism = data.get("organism", "hsapiens")
 
-        # DE
-        de_df = compute_differential_expression(counts_df, metadata_df)
+        if not query or not isinstance(query, list):
+            return JSONResponse(status_code=400, content={"error": "Missing or invalid 'query' list"})
 
-        # Filter significant genes
-        sig_genes = ["TP53", "BRCA1", "EGFR", "MYC"]
-
-        # Run enrichment
-        enrich_df = run_gprofiler_enrichment(sig_genes)
+        enrich_df = run_gprofiler_enrichment(query, organism=organism)
 
         if enrich_df.empty:
             return JSONResponse(content=[])
@@ -135,7 +129,6 @@ async def run_enrichment(
         return JSONResponse(
             content=enrich_df[available_cols].to_dict(orient="records")
         )
-
     except Exception as e:
         import traceback
         traceback.print_exc()

@@ -7,6 +7,7 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
     const [metadataFile, setMetadataFile] = useState(null);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [organism, setOrganism] = useState("hsapiens");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,6 +20,8 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
         const formData = new FormData();
         formData.append("counts_file", countsFile);
         formData.append("metadata_file", metadataFile);
+        formData.append("organism", organism);
+
 
         try {
             console.log("Sending files...");
@@ -37,10 +40,15 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
             const deRes = await axios.post("http://127.0.0.1:8000/de", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
+            const sigGenes = deRes.data
+                .filter(d => d.pvalue < 0.05 && Math.abs(d.log2FC) > 1)
+                .map(d => d.Gene);
 
-            const enrichRes = await axios.post("http://127.0.0.1:8000/enrich", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+            const enrichRes = await axios.post("http://127.0.0.1:8000/enrich", {
+                query: sigGenes,
+                organism: organism,
             });
+
             console.log("Enrichment response received:", enrichRes.data);
             setEnrichmentData(enrichRes.data);
 
@@ -65,6 +73,15 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
                     <label>Metadata File (CSV/TSV): </label>
                     <input type="file" onChange={(e) => setMetadataFile(e.target.files[0])} />
                 </div>
+                <div>
+                    <label>Select Organism: </label>
+                    <select value={organism} onChange={(e) => setOrganism(e.target.value)}>
+                        <option value="hsapiens">🧍 Human</option>
+                        <option value="mmusculus">🐁 Mouse</option>
+                        <option value="dmelanogaster">🪰 Fruit Fly</option>
+                    </select>
+                </div>
+
                 <button type="submit">Upload & Analyze</button>
             </form>
 

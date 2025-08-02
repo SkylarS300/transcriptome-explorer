@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import UploadPanel from "./components/UploadPanel";
 import PCAGraph from "./components/PCAGraph";
 import DETable from "./components/DETable";
+import PCAPlot from "./components/PCAPlot";
+import EnrichmentTable from "./components/EnrichmentTable";
 import EnrichmentViewer from "./components/EnrichmentViewer";
 import VolcanoPlot from "./components/VolcanoPlot";
 
@@ -16,9 +18,11 @@ const App = () => {
             <h1 style={{ textAlign: "center" }}>Transcriptome Visualizer</h1>
             <UploadPanel setPcaData={setPcaData} setDeData={setDeData} setEnrichmentData={setEnrichmentData} />
             <PCAGraph data={pcaData} />
+            <PCAPlot data={pcaData} />
             <VolcanoPlot data={deData} />
             <DETable data={deData} />
             <EnrichmentViewer data={enrichmentData} />
+            {enrichmentData && <EnrichmentTable data={enrichmentData} />}
         </div>
     );
 };

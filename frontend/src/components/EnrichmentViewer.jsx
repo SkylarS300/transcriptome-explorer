@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Plot from "react-plotly.js";
 
 const EnrichmentViewer = ({ data }) => {
     const [sourceFilter, setSourceFilter] = useState("ALL");
+    const plotRef = useRef();
 
     if (!data || data.length === 0) return <p>No enrichment results to display.</p>;
 
@@ -12,6 +13,7 @@ const EnrichmentViewer = ({ data }) => {
         : data.filter((d) => d.source === sourceFilter);
 
     const sorted = [...filtered].sort((a, b) => a.p_value - b.p_value).slice(0, 10);
+
 
     return (
         <div style={{ marginTop: "2rem" }}>
@@ -80,6 +82,7 @@ const EnrichmentViewer = ({ data }) => {
 
             <h4 style={{ marginTop: "2rem" }}>Top 10 Enriched Terms</h4>
             <Plot
+                ref={plotRef}
                 data={[
                     {
                         x: sorted.map((d) => -Math.log10(d.p_value + 1e-10)),
@@ -126,5 +129,23 @@ const EnrichmentViewer = ({ data }) => {
         </div>
     );
 };
+
+<button
+    onClick={() => {
+        if (plotRef.current) {
+            window.Plotly.downloadImage(plotRef.current, {
+                format: "png",
+                filename: "enrichment_plot",
+                width: 800,
+                height: 600,
+                scale: 2,
+            });
+        }
+    }}
+    style={{ marginTop: "1rem" }}
+>
+    📸 Download PNG
+</button>
+
 
 export default EnrichmentViewer;
