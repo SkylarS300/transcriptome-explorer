@@ -1,9 +1,12 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from .de_analysis import compute_differential_expression
+from .enrichment import run_gprofiler_enrichment
 from .pca import compute_pca
 import pandas as pd
 import io
+
 
 app = FastAPI()
 
@@ -80,6 +83,59 @@ async def analyze(
             "metadata_columns": metadata_df.columns.tolist(),
             "pca": pca_df.to_dict(orient="records")
         })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/de")
+async def run_de(
+    counts_file: UploadFile = File(...),
+    metadata_file: UploadFile = File(...)
+):
+    try:
+        counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+
+        de_df = compute_differential_expression(counts_df, metadata_df)
+        return JSONResponse(content=de_df.to_dict(orient="records"))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/enrich")
+async def run_enrichment(
+    counts_file: UploadFile = File(...),
+    metadata_file: UploadFile = File(...)
+):
+    try:
+        # Parse
+        counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+
+        # DE
+        de_df = compute_differential_expression(counts_df, metadata_df)
+
+        # Filter significant genes
+        sig_genes = ["TP53", "BRCA1", "EGFR", "MYC"]
+
+        # Run enrichment
+        enrich_df = run_gprofiler_enrichment(sig_genes)
+
+        if enrich_df.empty:
+            return JSONResponse(content=[])
+
+        required_cols = ["term_id", "name", "p_value", "source"]
+        available_cols = [col for col in required_cols if col in enrich_df.columns]
+
+        if not available_cols:
+            return JSONResponse(content=[])
+
+        return JSONResponse(
+            content=enrich_df[available_cols].to_dict(orient="records")
+        )
+
     except Exception as e:
         import traceback
         traceback.print_exc()

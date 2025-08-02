@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "../styles/UploadPanel.css";
 
-
-const UploadPanel = ({ setPcaData }) => {
+const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
     const [countsFile, setCountsFile] = useState(null);
     const [metadataFile, setMetadataFile] = useState(null);
     const [result, setResult] = useState(null);
@@ -23,23 +22,36 @@ const UploadPanel = ({ setPcaData }) => {
 
         try {
             console.log("Sending files...");
+
+            // PCA and summary
             const res = await axios.post("http://127.0.0.1:8000/analyze", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
-            console.log("Response received:", res.data);
+            console.log("PCA/summary response received:", res.data);
             setResult(res.data);
             setPcaData(res.data.pca);
             setError(null);
+
+            // Volcano DE
+            const deRes = await axios.post("http://127.0.0.1:8000/de", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            const enrichRes = await axios.post("http://127.0.0.1:8000/enrich", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            console.log("Enrichment response received:", enrichRes.data);
+            setEnrichmentData(enrichRes.data);
+
+
+            console.log("DE response received:", deRes.data);
+            setDeData(deRes.data);
         } catch (err) {
             console.error("Analysis error:", err);
             setError(err.response?.data?.error || "Upload or analysis failed.");
         }
     };
-
-
 
     return (
         <div style={{ padding: "2rem" }}>
