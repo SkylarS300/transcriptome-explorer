@@ -1,0 +1,57 @@
+.container {
+    margin-top: 2rem;
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #002855;
+}
+
+.downloadBtn {
+    margin-bottom: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.downloadBtn:hover {
+    background-color: #005fa3;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid #ccc;
+    background-color: #f5f5f5;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.link {
+    color: #0077cc;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

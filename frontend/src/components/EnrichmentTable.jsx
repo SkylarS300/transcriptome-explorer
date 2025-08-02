@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./EnrichmentTable.module.css";
 
 const EnrichmentTable = ({ data }) => {
     if (!data || data.length === 0) return null;
@@ -26,30 +27,31 @@ const EnrichmentTable = ({ data }) => {
     };
 
     return (
-        <div style={{ marginTop: "2rem" }}>
-            <h3>📊 Enrichment Results Table</h3>
+        <div className={styles.container}>
+            <h3 className={styles.title}>📊 Enrichment Results Table</h3>
 
-            <button onClick={handleDownload} style={{ marginBottom: "1rem" }}>
+            <button onClick={handleDownload} className={styles.downloadBtn}>
                 📥 Download CSV
             </button>
 
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th style={th}>Term</th>
-                        <th style={th}>Source</th>
-                        <th style={th}>p-value</th>
-                        <th style={th}>Link</th>
+                        <th>Term</th>
+                        <th>Source</th>
+                        <th>p-value</th>
+                        <th>Link</th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.map((row, i) => (
                         <tr key={i}>
-                            <td style={td}>{row.name}</td>
-                            <td style={{ ...td, color: sourceColors[row.source] || "#333" }}>{row.source}</td>
-                            <td style={td}>{Number(row.p_value).toExponential(2)}</td>
-                            <td style={td}>
+                            <td>{row.name}</td>
+                            <td style={{ color: sourceColors[row.source] || "#333" }}>{row.source}</td>
+                            <td>{Number(row.p_value).toExponential(2)}</td>
+                            <td>
                                 <a
+                                    className={styles.link}
                                     href={`https://biit.cs.ut.ee/gprofiler/gconvert.cgi?query=${row.term_id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -63,18 +65,6 @@ const EnrichmentTable = ({ data }) => {
             </table>
         </div>
     );
-};
-
-const th = {
-    textAlign: "left",
-    padding: "8px",
-    borderBottom: "2px solid #ccc",
-    backgroundColor: "#f5f5f5"
-};
-
-const td = {
-    padding: "8px",
-    borderBottom: "1px solid #ddd"
 };
 
 const sourceColors = {

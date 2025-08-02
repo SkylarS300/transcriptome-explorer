@@ -1,6 +1,7 @@
 // src/components/PCAPlot.jsx
 import React, { useRef } from "react";
 import html2canvas from "html2canvas";
+import styles from "./PCAPlot.module.css";
 import {
     ScatterChart,
     Scatter,
@@ -35,9 +36,9 @@ const PCAPlot = ({ data }) => {
     };
 
     return (
-        <div style={{ marginTop: "2rem" }}>
-            <h3>🔬 PCA Plot</h3>
-            <div ref={chartRef} style={{ background: "white", padding: "1rem" }}>
+        <div className={styles.container}>
+            <h3 className={styles.title}>🔬 PCA Plot</h3>
+            <div ref={chartRef} className={styles.chartWrapper}>
                 <ResponsiveContainer width="100%" height={400}>
                     <ScatterChart>
                         <CartesianGrid />
@@ -50,13 +51,13 @@ const PCAPlot = ({ data }) => {
                                 key={groupName}
                                 name={groupName}
                                 data={points}
-                                fill={`hsl(${idx * 80}, 70%, 50%)`} // unique color per group
+                                fill={`hsl(${idx * 80}, 70%, 50%)`}
                             />
                         ))}
                     </ScatterChart>
                 </ResponsiveContainer>
             </div>
-            <button onClick={downloadPNG} style={{ marginTop: "1rem" }}>
+            <button onClick={downloadPNG} className={styles.downloadBtn}>
                 📥 Download PNG
             </button>
         </div>

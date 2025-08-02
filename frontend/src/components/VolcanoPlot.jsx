@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import Plot from "react-plotly.js";
+import styles from "./VolcanoPlot.module.css";
 
 const VolcanoPlot = ({ data }) => {
     const plotRef = useRef();
@@ -27,8 +28,8 @@ const VolcanoPlot = ({ data }) => {
     };
 
     return (
-        <div style={{ marginTop: "2rem" }}>
-            <h3>🌋 Volcano Plot</h3>
+        <div className={styles.container}>
+            <h3 className={styles.title}>🌋 Volcano Plot</h3>
             <Plot
                 ref={plotRef}
                 data={[
@@ -58,9 +59,9 @@ const VolcanoPlot = ({ data }) => {
                     height: 500,
                     margin: { t: 40, r: 20, b: 40, l: 50 },
                 }}
-                config={{ responsive: true, displayModeBar: false }} // hide Plotly's default bar
+                config={{ responsive: true, displayModeBar: false }}
             />
-            <button onClick={downloadPlot} style={{ marginTop: "1rem" }}>
+            <button onClick={downloadPlot} className={styles.downloadBtn}>
                 📥 Download PNG
             </button>
         </div>

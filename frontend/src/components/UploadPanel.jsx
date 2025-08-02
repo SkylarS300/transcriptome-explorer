@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/UploadPanel.css";
+import styles from "./UploadPanel.module.css";
 
 const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
     const [countsFile, setCountsFile] = useState(null);
@@ -62,18 +62,18 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
     };
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className={styles.panel}>
             <h2>🧬 Upload Transcriptome Files</h2>
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className={styles.formGroup}>
                     <label>Counts File (CSV/TSV): </label>
                     <input type="file" onChange={(e) => setCountsFile(e.target.files[0])} />
                 </div>
-                <div>
+                <div className={styles.formGroup}>
                     <label>Metadata File (CSV/TSV): </label>
                     <input type="file" onChange={(e) => setMetadataFile(e.target.files[0])} />
                 </div>
-                <div>
+                <div className={styles.formGroup}>
                     <label>Select Organism: </label>
                     <select value={organism} onChange={(e) => setOrganism(e.target.value)}>
                         <option value="hsapiens">🧍 Human</option>
@@ -99,6 +99,7 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData }) => {
             )}
         </div>
     );
+
 };
 
 export default UploadPanel;
