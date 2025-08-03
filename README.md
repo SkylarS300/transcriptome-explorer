@@ -6,19 +6,20 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 
 ## 🚀 Features
 
-- 📁 Upload your **counts matrix** and **sample metadata**
-- 🧬 Choose from human, mouse, or fruit fly (supports `hsapiens`, `mmusculus`, `dmelanogaster`)
-- 📊 View **Principal Component Analysis (PCA)** plots
-- 🔥 Perform **Differential Expression (DE)** with volcano plot visualization
-- 🧠 Discover **biological enrichment** via [g:Profiler](https://biit.cs.ut.ee/gprofiler)
-- 📥 Export results (DE + enrichment) as CSV
-- 💾 (Coming Soon) Save/load analysis sessions client-side
+- 📁 Upload your **gene expression counts matrix** and **sample metadata**
+- 🧬 Choose organism: `hsapiens`, `mmusculus`, or `dmelanogaster`
+- 📊 Visualize **Principal Component Analysis (PCA)** with group color coding
+- 🔥 Run **Differential Expression (DE)** with volcano plot output
+- 🧠 Discover functional relevance via [g:Profiler](https://biit.cs.ut.ee/gprofiler)
+- 📥 Export DE and enrichment results as **CSV**
+- ❗ Get automatic **sample name matching checks** and column validation
+- 💾 *(Coming Soon)* Save/load analysis sessions on the client
 
 ---
 
 ## 🖼️ Demo
 
-> Coming soon! For now, clone and run locally.
+> https://transcriptome-explorer.vercel.app/
 
 ---
 
@@ -30,7 +31,7 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 | Backend   | FastAPI (Python 3.12)    |
 | Analysis  | pandas, scikit-learn, scipy |
 | Enrichment | g:Profiler API (gost)   |
-| Charts    | Recharts (PCA/Volcano)   |
+| Visualization | Recharts             |
 
 ---
 
@@ -38,15 +39,19 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 
 ### 🧬 Counts Matrix
 
-- TSV or CSV  
-- Rows = genes, Columns = samples  
-- First column = Gene identifiers (symbols or Ensembl IDs)
+- Format: `.csv` or `.tsv`
+- Rows = genes, columns = samples
+- First column must be gene identifiers (symbols or Ensembl IDs)
 
-### 📋 Metadata
 
-- TSV or CSV  
-- Rows = samples, Columns = metadata (e.g., `condition`)  
-- Must include a `condition` column used for DE testing
+### 📋 Metadata File
+
+- Format: `.csv` or `.tsv`
+- Rows = samples, columns = metadata
+- Must include:
+  - A **sample ID column** (e.g., `Sample`)
+  - A **group column** (e.g., `Group`) for DE comparison
+
 
 ---
 
@@ -57,46 +62,44 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 ```bash
 git clone https://github.com/SkylarS300/transcriptome-explorer.git
 cd transcriptome-explorer
+``` 
+
+## Backend (FastAPI)
+```bash 
+cd backend
+python -m venv .venv
+source .venv/bin/activate      # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+uvicorn app:app --reload
 ```
 
-## 2. Backend (FastAPI)
+## Frontend (React + Vite)
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-- cd backend
-- python -m venv .venv
-- source .venv/bin/activate      # or .venv\Scripts\activate on Windows
-- pip install -r requirements.txt
-- uvicorn app:app --reload
-
-## 3. Frontend (React + Vite)
-
-- cd frontend
-- npm install
-- npm run dev
-
-Frontend runs at: http://localhost:5173
-Backend runs at: http://localhost:8000
-
-Make sure CORS is properly enabled in ```app.py```
+✅ Ensure CORS is enabled in backend/app.py.
 
 ## 📈 Planned Features
 
-- 🔖 Save & load previous analysis sessions (JSON)
+- 💾 Save & load full analysis sessions (client-side JSON)
 
 - 🧬 Support gene ID mapping across organisms
 
-- 🖼️ Enhanced volcano/PCA interactivity (hover, highlight)
+- 🖱️ Interactivity: hover tooltips, zoom/pan for plots
 
-- 🧬 Additional plots: MA plot, heatmaps
+- 🧮 More plots: MA plots, gene-wise boxplots, heatmaps
 
-- 🌐 Public deployment (Render, Hugging Face, or Netlify)
 
-📎 Example Output
+## 📎 Example Output
 
-- PCA: visualize sample clustering
+- PCA: Sample clustering colored by group
 
-- Volcano: see DE genes (log2FC vs –log10p)
+- Volcano: DE genes with log2FC vs –log10(p-value)
 
-- Enrichment: top GO/KEGG/Reactome pathways
+- Enrichment: Top GO/KEGG/Reactome terms from g:Profiler
 
 ## 📄 License
 
