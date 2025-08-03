@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from .de_analysis import compute_differential_expression
 from .enrichment import run_gprofiler_enrichment
 from .pca import compute_pca
+from fastapi import Form
 import pandas as pd
 import io
 
@@ -14,7 +15,7 @@ app = FastAPI()
 # Allow React frontend to access this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # or your React dev server
+    allow_origins=["*"],  # or your React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,33 +48,38 @@ async def upload_files(
 @app.post("/pca")
 async def run_pca(
     counts_file: UploadFile = File(...),
-    metadata_file: UploadFile = File(...)
+    metadata_file: UploadFile = File(...),
+    sample_col: str = Form(...),
+    group_col: str = Form(...)
 ):
     try:
         counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
         metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
 
-        pca_df = compute_pca(counts_df, metadata_df)
+        pca_df = compute_pca(counts_df, metadata_df, sample_col, group_col)
 
         return JSONResponse(content=pca_df.to_dict(orient="records"))
     except Exception as e:
         return JSONResponse(status_code=400, content={"error": str(e)})
 
+
 @app.post("/analyze")
 async def analyze(
     counts_file: UploadFile = File(...),
-    metadata_file: UploadFile = File(...)
+    metadata_file: UploadFile = File(...),
+    sample_col: str = Form(...),
+    group_col: str = Form(...)
 ):
     try:
         print("Reading uploaded files...")
 
         counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
-        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python")
 
         print("Counts shape:", counts_df.shape)
         print("Metadata shape:", metadata_df.shape)
 
-        pca_df = compute_pca(counts_df, metadata_df)
+        pca_df = compute_pca(counts_df, metadata_df, sample_col, group_col)
 
         print("PCA complete. Returning response...")
 
@@ -89,21 +95,31 @@ async def analyze(
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+
 @app.post("/de")
 async def run_de(
     counts_file: UploadFile = File(...),
-    metadata_file: UploadFile = File(...)
+    metadata_file: UploadFile = File(...),
+    sample_col: str = Form(...),
+    group_col: str = Form(...)
 ):
     try:
         counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
-        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python")
 
-        de_df = compute_differential_expression(counts_df, metadata_df)
+        print("Counts shape:", counts_df.shape)
+        print("Metadata shape:", metadata_df.shape)
+        print("Sample col:", sample_col, "| Group col:", group_col)
+        print("Counts columns:", counts_df.columns.tolist())
+        print("Metadata sample column values:", metadata_df[sample_col].tolist())
+
+        de_df = compute_differential_expression(counts_df, metadata_df, sample_col, group_col)
         return JSONResponse(content=de_df.to_dict(orient="records"))
     except Exception as e:
         import traceback
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
+
 
 @app.post("/enrich")
 async def run_enrichment(request: Request):

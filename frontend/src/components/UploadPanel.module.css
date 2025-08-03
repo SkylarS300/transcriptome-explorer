@@ -98,3 +98,22 @@ pre {
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
 }
+
+.dropdownGroup {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dropdownGroup select {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    background-color: #fff;
+}
+
+.dropdownGroup label {
+    font-weight: 500;
+    margin-right: 0.5rem;
+}

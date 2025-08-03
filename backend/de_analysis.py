@@ -2,10 +2,13 @@ import pandas as pd
 import numpy as np
 from scipy.stats import ttest_ind
 
-def compute_differential_expression(counts_df, metadata_df):
+def compute_differential_expression(counts_df, metadata_df, sample_col, group_col):
     # Sanitize
-    counts_df.columns = counts_df.columns.str.strip()
-    metadata_df.index = metadata_df.index.str.strip()
+    counts_df.columns = counts_df.columns.astype(str).str.strip()
+    metadata_df[sample_col] = metadata_df[sample_col].astype(str).str.strip()
+    metadata_df[group_col] = metadata_df[group_col].astype(str).str.strip()
+    metadata_df.set_index(sample_col, inplace=True)
+    metadata_df.index = metadata_df.index.astype(str).str.strip()
 
     # Match samples
     common_samples = counts_df.columns.intersection(metadata_df.index)
@@ -13,7 +16,6 @@ def compute_differential_expression(counts_df, metadata_df):
     metadata_df = metadata_df.loc[common_samples]
 
     # Grouping
-    group_col = metadata_df.columns[0]
     groups = metadata_df[group_col].unique()
     if len(groups) != 2:
         raise ValueError("DE analysis requires exactly 2 groups")
