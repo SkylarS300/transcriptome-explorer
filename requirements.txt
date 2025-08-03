@@ -1,4 +1,10 @@
 fastapi
 uvicorn
 pandas
+numpy
+scipy
 python-multipart
+statsmodels
+scikit-learn
+matplotlib
+seaborn
