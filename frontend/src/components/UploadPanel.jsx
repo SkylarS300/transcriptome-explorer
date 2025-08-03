@@ -124,12 +124,13 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }
         formData.append("group_col", groupCol);
 
         try {
-            const res = await axios.post("http://127.0.0.1:8000/analyze", formData);
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, formData);
             setResult(res.data);
             setPcaData(res.data.pca);
             setError(null);
 
-            const deRes = await axios.post("http://127.0.0.1:8000/de", formData);
+            const deRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, formData);
+
 
             const sigGenes = deRes.data
                 .filter(d => d.pvalue < pvalThreshold && Math.abs(d.log2FC) > log2fcThreshold)
@@ -141,7 +142,7 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }
                 return;
             }
 
-            const enrichRes = await axios.post("http://127.0.0.1:8000/enrich", {
+            const enrichRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, {
                 query: sigGenes,
                 organism,
             });
