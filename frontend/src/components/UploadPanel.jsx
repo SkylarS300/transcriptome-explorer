@@ -7,6 +7,7 @@ import Papa from "papaparse";
 import leven from "leven";
 
 const normalize = (str) => str?.trim().toLowerCase();
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }) => {
     const [metadataHeaders, setMetadataHeaders] = useState([]);
@@ -60,16 +61,27 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }
                 setMetadataHeaders(headers);
                 setMetadataPreview(results.data);
                 setTimeout(checkSampleMatch, 0);
-                const sampleGuess = headers.find(h => h.toLowerCase().includes("sample")) || headers[0];
-                const groupGuess = headers.find(h => h.toLowerCase().includes("group")) || headers[1];
-                setSampleCol(sampleGuess);
-                setGroupCol(groupGuess);
+
+                // 🛠️ Hardcode exact match to file you sent
+                const sampleColExact = "SampleID";
+                const groupColExact = "Group";
+
+                console.log("📋 Parsed headers:", headers);
+                console.log("✅ Forcing sample_col =", sampleColExact);
+                console.log("✅ Forcing group_col =", groupColExact);
+
+                setSampleCol(sampleColExact);
+                setGroupCol(groupColExact);
+
                 const errors = [];
-                if (!headers.includes(groupGuess)) errors.push("Metadata file missing a 'Group' column");
+                if (!headers.includes(groupColExact)) errors.push("Metadata file missing a 'Group' column");
+                if (!headers.includes(sampleColExact)) errors.push("Metadata file missing a 'SampleID' column");
                 setValidationErrors((prev) => [...prev, ...errors]);
             },
         });
     };
+
+
 
     const checkSampleMatch = () => {
         if (countsPreview.length === 0 || metadataPreview.length === 0) return;
@@ -116,6 +128,12 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }
         if (sampleMatchWarnings.length > 0)
             return alert("Please resolve sample matching issues before continuing.");
 
+
+        console.log("🚀 Submitting with sample_col:", sampleCol);
+        console.log("🚀 Submitting with group_col:", groupCol);
+
+
+        // Create new FormData for each POST
         const formData = new FormData();
         formData.append("counts_file", countsFile);
         formData.append("metadata_file", metadataFile);
@@ -124,37 +142,58 @@ const UploadPanel = ({ setPcaData, setDeData, setEnrichmentData, showHelpModal }
         formData.append("group_col", groupCol);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, formData);
-            setResult(res.data);
-            setPcaData(res.data.pca);
-            setError(null);
+            // Step 1: PCA
+            console.log("🚀 FORM KEYS BEING SENT:");
+            for (let pair of formData.entries()) {
+                console.log(pair[0], "=>", pair[1]);
+            }
 
-            const deRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, formData);
+            const pcaRes = await axios.post(`${API_BASE_URL}/pca`, formData);
+            setPcaData(pcaRes.data);
 
+            // Step 2: DE (must re-create FormData)
+            const deForm = new FormData();
+            deForm.append("counts_file", countsFile);
+            deForm.append("metadata_file", metadataFile);
+            deForm.append("organism", organism);
+            deForm.append("sample_col", sampleCol);
+            deForm.append("group_col", groupCol);
 
+            const deRes = await axios.post(`${API_BASE_URL}/de`, deForm);
+            setDeData(deRes.data);
+
+            // Step 3: Significant genes → Enrichment
             const sigGenes = deRes.data
                 .filter(d => d.pvalue < pvalThreshold && Math.abs(d.log2FC) > log2fcThreshold)
                 .map(d => d.Gene);
 
             if (sigGenes.length === 0) {
-                alert("No significant DE genes found (p < " + pvalThreshold + ", |log2FC| > " + log2fcThreshold + ").");
-                setDeData(deRes.data);  // Still display full DE table
+                alert("No significant DE genes found.");
                 return;
             }
 
-            const enrichRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/your-endpoint`, {
+            const enrichRes = await axios.post(`${API_BASE_URL}/enrich`, {
                 query: sigGenes,
                 organism,
             });
 
             setEnrichmentData(enrichRes.data);
-            setDeData(deRes.data);
+            setError(null);
 
         } catch (err) {
             console.error("Analysis error:", err);
-            setError(err.response?.data?.error || "Upload or analysis failed.");
+            if (err.response) {
+                console.error("Server says:", err.response.data);
+                setError(err.response.data?.detail || err.response.data?.error || "Upload or analysis failed.");
+            } else {
+                setError("Upload or analysis failed.");
+            }
         }
+
     };
+
+
+
 
     return (
         <div className={styles.panel}>

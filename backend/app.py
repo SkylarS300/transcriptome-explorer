@@ -33,7 +33,7 @@ async def upload_files(
     try:
         # Read uploaded files into Pandas DataFrames
         counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
-        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python")
 
         # Check basic shape and return summary
         return JSONResponse(content={
@@ -53,14 +53,26 @@ async def run_pca(
     group_col: str = Form(...)
 ):
     try:
+        print("📥 Received sample_col:", sample_col)
+        print("📥 Received group_col:", group_col)
+
         counts_df = pd.read_csv(counts_file.file, sep=None, engine="python", index_col=0)
-        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python", index_col=0)
+        metadata_df = pd.read_csv(metadata_file.file, sep=None, engine="python")
+
+        print("✅ metadata_df.columns:", metadata_df.columns.tolist())
+        print("✅ metadata_df.head():\n", metadata_df.head())
+
+        # Try to access the sample_col directly to confirm
+        _ = metadata_df[sample_col]
 
         pca_df = compute_pca(counts_df, metadata_df, sample_col, group_col)
 
         return JSONResponse(content=pca_df.to_dict(orient="records"))
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return JSONResponse(status_code=400, content={"error": str(e)})
+
 
 
 @app.post("/analyze")
