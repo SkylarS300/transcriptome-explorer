@@ -3,10 +3,5 @@ uvicorn
 pandas
 numpy
 scipy
-python-multipart
-statsmodels
 scikit-learn
-matplotlib
-seaborn
-requests
-leven
+python-multipart
