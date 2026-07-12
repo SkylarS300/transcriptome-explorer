@@ -1,29 +1,29 @@
-# 🧬 Transcriptome Visualizer & Differential Expression Explorer
+# Transcriptome Visualizer & Differential Expression Explorer
 
-A full-stack web app for exploring transcriptomic data via PCA, differential expression analysis, and functional enrichment — all from your browser. Built with **React + FastAPI**, this tool enables interactive analysis of gene expression count matrices with integrated support for multiple organisms.
-
----
-
-## 🚀 Features
-
-- 📁 Upload your **gene expression counts matrix** and **sample metadata**
-- 🧬 Choose organism: `hsapiens`, `mmusculus`, or `dmelanogaster`
-- 📊 Visualize **Principal Component Analysis (PCA)** with group color coding
-- 🔥 Run **Differential Expression (DE)** with volcano plot output
-- 🧠 Discover functional relevance via [g:Profiler](https://biit.cs.ut.ee/gprofiler)
-- 📥 Export DE and enrichment results as **CSV**
-- ❗ Get automatic **sample name matching checks** and column validation
-- 💾 *(Coming Soon)* Save/load analysis sessions on the client
+A full-stack web app for exploring transcriptomic data via PCA, differential expression analysis, and functional enrichment all from your browser. Built with **React + FastAPI**, this tool enables interactive analysis of gene expression count matrices with integrated support for multiple organisms.
 
 ---
 
-## 🖼️ Demo
+## Features
+
+- Upload your **gene expression counts matrix** and **sample metadata**
+  Choose organism: `hsapiens`, `mmusculus`, or `dmelanogaster`
+- Visualize **Principal Component Analysis (PCA)** with group color coding
+  Run **Differential Expression (DE)** with volcano plot output
+- Discover functional relevance via [g:Profiler](https://biit.cs.ut.ee/gprofiler)
+- Export DE and enrichment results as **CSV**
+- Get automatic **sample name matching checks** and column validation
+- *(Coming Soon)* Save/load analysis sessions on the client
+
+---
+
+## Demo
 
 > https://transcriptome-explorer.vercel.app/
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 | Layer     | Technology               |
 |-----------|--------------------------|
@@ -35,16 +35,16 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 
 ---
 
-## 📂 File Upload Format
+## File Upload Format
 
-### 🧬 Counts Matrix
+### Counts Matrix
 
 - Format: `.csv` or `.tsv`
 - Rows = genes, columns = samples
 - First column must be gene identifiers (symbols or Ensembl IDs)
 
 
-### 📋 Metadata File
+### Metadata File
 
 - Format: `.csv` or `.tsv`
 - Rows = samples, columns = metadata
@@ -55,7 +55,7 @@ A full-stack web app for exploring transcriptomic data via PCA, differential exp
 
 ---
 
-## ⚙️ Local Setup
+## Local Setup
 
 ### 1. Clone the repo
 
@@ -80,20 +80,20 @@ npm install
 npm run dev
 ```
 
-✅ Ensure CORS is enabled in backend/app.py.
+Ensure CORS is enabled in backend/app.py.
 
-## 📈 Planned Features
+## Planned Features
 
-- 💾 Save & load full analysis sessions (client-side JSON)
+- Save & load full analysis sessions (client-side JSON)
 
-- 🧬 Support gene ID mapping across organisms
+- Support gene ID mapping across organisms
 
-- 🖱️ Interactivity: hover tooltips, zoom/pan for plots
+- Interactivity: hover tooltips, zoom/pan for plots
 
-- 🧮 More plots: MA plots, gene-wise boxplots, heatmaps
+- More plots: MA plots, gene-wise boxplots, heatmaps
 
 
-## 📎 Example Output
+## Example Output
 
 - PCA: Sample clustering colored by group
 
@@ -101,6 +101,6 @@ npm run dev
 
 - Enrichment: Top GO/KEGG/Reactome terms from g:Profiler
 
-## 📄 License
+## License
 
 MIT License © 2025 Skylar S.
